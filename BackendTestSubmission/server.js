@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const urlRoutes = require('./routes/urlRoutes');
-const logger = require('./middleware/logger');
+const { requestLogger } = require('./middleware/logger');
+
 
 const app = express();
 app.use(bodyParser.json());
-app.use(logger);
+app.use(requestLogger);
 
 app.use('/', urlRoutes);
 
