@@ -8,9 +8,9 @@ export default function ShortenerForm() {
   const [results, setResults] = useState([]);
 
   const handleChange = (index, field, value) => {
-    const newUrls = [...urls];
-    newUrls[index][field] = value;
-    setUrls(newUrls);
+    const updatedUrls = [...urls];
+    updatedUrls[index][field] = value;
+    setUrls(updatedUrls);
   };
 
   const addUrl = () => {
@@ -26,6 +26,7 @@ export default function ShortenerForm() {
         alert("Please enter a valid URL");
         return;
       }
+
       const body = { url: u.url };
       if (u.validity) body.validity = parseInt(u.validity);
       if (u.shortcode) body.shortcode = u.shortcode;
@@ -43,58 +44,65 @@ export default function ShortenerForm() {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        URL Shortener
+      <Typography variant="h5" align="center" gutterBottom>
+        Shorten Your URLs
       </Typography>
-      {urls.map((u, i) => (
-        <Paper key={i} sx={{ p: 2, mb: 2 }}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Long URL"
-                fullWidth
-                value={u.url}
-                onChange={(e) => handleChange(i, "url", e.target.value)}
-              />
+
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        {urls.map((u, i) => (
+          <Paper key={i} sx={{ p: 2 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  label="Long URL"
+                  fullWidth
+                  value={u.url}
+                  onChange={(e) => handleChange(i, "url", e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  label="Validity (minutes)"
+                  fullWidth
+                  value={u.validity}
+                  onChange={(e) => handleChange(i, "validity", e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  label="Custom Shortcode"
+                  fullWidth
+                  value={u.shortcode}
+                  onChange={(e) => handleChange(i, "shortcode", e.target.value)}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Validity (minutes)"
-                fullWidth
-                value={u.validity}
-                onChange={(e) => handleChange(i, "validity", e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12} sm={3}>
-              <TextField
-                label="Custom Shortcode"
-                fullWidth
-                value={u.shortcode}
-                onChange={(e) => handleChange(i, "shortcode", e.target.value)}
-              />
-            </Grid>
-          </Grid>
-        </Paper>
-      ))}
-      {urls.length < 5 && (
-        <Button onClick={addUrl} variant="outlined" sx={{ mb: 2 }}>
-          Add another URL
-        </Button>
-      )}
-      <Button onClick={handleSubmit} variant="contained">
-        Shorten URLs
-      </Button>
-      {results.map((r, i) => (
-        <Box key={i} sx={{ mt: 2 }}>
-          <Typography>
-            Short Link:{" "}
-            <a href={r.shortLink} target="_blank">
-              {r.shortLink}
-            </a>
-          </Typography>
-          <Typography>Expires at: {r.expiry}</Typography>
+          </Paper>
+        ))}
+
+        <Box sx={{ display: "flex", gap: 2 }}>
+          {urls.length < 5 && (
+            <Button variant="outlined" onClick={addUrl}>
+              Add another URL
+            </Button>
+          )}
+          <Button variant="contained" onClick={handleSubmit}>
+            Shorten URLs
+          </Button>
         </Box>
-      ))}
+
+        {results.map((r, i) => (
+          <Paper key={i} sx={{ p: 2 }}>
+            <Typography>
+              Short Link:{" "}
+              <a href={r.shortLink} target="_blank" rel="noopener noreferrer">
+                {r.shortLink}
+              </a>
+            </Typography>
+            <Typography>Expires at: {r.expiry}</Typography>
+          </Paper>
+        ))}
+      </Box>
     </Box>
   );
 }
