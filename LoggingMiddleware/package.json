@@ -1,5 +1,5 @@
 {
-  "name": "backendtestsubmission",
+  "name": "loggingmiddleware",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -12,11 +12,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "axios": "^1.10.0",
     "body-parser": "^2.2.0",
-    "express": "^5.1.0",
-    "uuid": "^11.1.0",
-    "validator": "^13.15.15"
+    "express": "^5.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
