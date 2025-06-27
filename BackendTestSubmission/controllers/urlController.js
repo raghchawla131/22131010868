@@ -15,40 +15,45 @@ function writeData(data) {
 }
 
 exports.createShortUrl = (req, res) => {
-  const { url, validity, shortcode } = req.body;
-  if (!url || !validator.isURL(url)) {
-    return res.status(400).json({ message: 'Invalid URL' });
+  try {
+    const { url, validity, shortcode } = req.body;
+    if (!url || !validator.isURL(url)) {
+      return res.status(400).json({ message: 'Invalid URL' });
+    }
+
+    let data = readData();
+    let code = shortcode || generateShortCode();
+
+    if (shortcode && data.find(d => d.shortcode === shortcode)) {
+      return res.status(409).json({ message: 'Shortcode already in use' });
+    }
+
+    while (!shortcode && data.find(d => d.shortcode === code)) {
+      code = generateShortCode();
+    }
+
+    const now = new Date();
+    const expiry = new Date(now.getTime() + (validity ? validity : 30) * 60000);
+
+    const entry = {
+      shortcode: code,
+      originalUrl: url,
+      createdAt: now.toISOString(),
+      expiry: expiry.toISOString(),
+      clicks: []
+    };
+
+    data.push(entry);
+    writeData(data);
+
+    res.status(201).json({
+      shortLink: `http://localhost:5000/${code}`,
+      expiry: entry.expiry
+    });
+  } catch (err) {
+    console.error('Error in createShortUrl:', err);
+    res.status(500).json({ message: 'Internal server error' });
   }
-
-  let data = readData();
-  let code = shortcode || generateShortCode();
-
-  if (shortcode && data.find(d => d.shortcode === shortcode)) {
-    return res.status(409).json({ message: 'Shortcode already in use' });
-  }
-
-  while (!shortcode && data.find(d => d.shortcode === code)) {
-    code = generateShortCode();
-  }
-
-  const now = new Date();
-  const expiry = new Date(now.getTime() + (validity ? validity : 30) * 60000);
-
-  const entry = {
-    shortcode: code,
-    originalUrl: url,
-    createdAt: now.toISOString(),
-    expiry: expiry.toISOString(),
-    clicks: []
-  };
-
-  data.push(entry);
-  writeData(data);
-
-  res.status(201).json({
-    shortLink: `http://localhost:5000/${code}`,
-    expiry: entry.expiry
-  });
 };
 
 exports.getUrlStats = (req, res) => {
